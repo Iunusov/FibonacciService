@@ -4,6 +4,7 @@
 #include <grpc++/grpc++.h>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string>
 
 using grpc::Channel;
@@ -15,7 +16,7 @@ public:
   Client(std::shared_ptr<Channel> channel) : stub_(Fib::NewStub(channel)) {}
   // Assambles the client's payload, sends it and presents the response back
   // from the server.
-  ServiceResponse getFibonacciNumber(uint64_t val) {
+  std::optional<ServiceResponse> getFibonacciNumber(uint64_t val) {
     // Data we are sending to the server.
     Request request;
     request.set_val(val);
@@ -29,11 +30,11 @@ public:
     // Act upon its status.
     if (status.ok()) {
       ServiceResponse response{reply.fib(), reply.timestamp(), reply.count()};
-      return response;
+      return std::optional<ServiceResponse>(response);
     } else {
       std::cout << status.error_code() << ": " << status.error_message()
                 << std::endl;
-      return {};
+      return std::nullopt;
     }
   }
 
@@ -48,11 +49,17 @@ int main(int argc, char **argv) {
   }
   Client client(grpc::CreateChannel("localhost:50051",
                                     grpc::InsecureChannelCredentials()));
-  uint64_t value{std::atoi(argv[1])};
+  uint64_t value{(uint64_t)std::atoi(argv[1])};
   auto reply = client.getFibonacciNumber(value);
 
-  std::cout << "{\"fib\"=" << reply.fib << ", \"timestamp\"=" << reply.timestamp
-            << ", \"count\"=" << reply.count << "}" << std::endl;
+  if (!reply) {
+    std::cout << "Error occured. Check input value" << std::endl;
+    return 0;
+  }
+
+  std::cout << "{\"fib\"=" << reply->fib
+            << ", \"timestamp\"=" << reply->timestamp
+            << ", \"count\"=" << reply->count << "}" << std::endl;
 
   return 0;
 }
