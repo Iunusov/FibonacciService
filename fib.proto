@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service Fib {
+  rpc get (Request) returns (Response) {}
+}
+
+message Request {
+  uint64 val = 1;
+}
+
+message Response {
+  uint64 fib = 1;
+  uint64 timestamp = 2;
+  uint64 count = 3;
+}
