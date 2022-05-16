@@ -6,8 +6,8 @@ cd ..
 mkdir build_dir
 cd build_dir
 
-cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build .  --config Release
+cmake .. -DCMAKE_BUILD_TYPE=Release -D_gRPC_CARES_LIBRARIES=cares
+cmake --build .  -j10 --config Release
 
 cd ..
 
