@@ -1,11 +1,12 @@
-
-#include "../fib.grpc.pb.h"
-#include "../types.hpp"
 #include <grpc++/grpc++.h>
+
 #include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
+
+#include "../fib.grpc.pb.h"
+#include "../types.hpp"
 
 using grpc::Channel;
 using grpc::ClientContext;
